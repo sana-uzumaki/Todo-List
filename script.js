@@ -36,11 +36,11 @@ function show(){
             ${x.done ? "checked" : ""}>
 
             <button class="edit">
-                ✏️
+                Edit
             </button>
 
             <button class="del">
-                🗑️
+                Del
             </button>
         </div>
         `;
