@@ -1,108 +1,127 @@
-const input = document.getElementById("in");
-const addBtn = document.getElementById("add-btn");
-const tasks = document.getElementById("tasks");
+const taskIn = document.getElementById("taskIn");
+const add = document.getElementById("add");
+const list = document.getElementById("list");
 
-let todoList = JSON.parse(localStorage.getItem("todos")) || [];
+let data =
+JSON.parse(
+localStorage.getItem("todo")
+) || [];
 
-function saveData(){
-    localStorage.setItem("todos", JSON.stringify(todoList));
+function save(){
+    localStorage.setItem(
+        "todo",
+        JSON.stringify(data)
+    );
 }
 
-function displayTasks(){
+function show(){
 
-    tasks.innerHTML = "";
+    list.innerHTML = "";
 
-    for(let i = 0; i < todoList.length; i++){
+    data.forEach((x,i)=>{
 
-        const taskDiv = document.createElement("div");
-        taskDiv.className = "task";
+        const box =
+        document.createElement("div");
 
-        const text = document.createElement("span");
-        text.textContent = todoList[i].text;
+        box.className = "item";
 
-        if(todoList[i].completed){
-            text.classList.add("completed");
-        }
+        box.innerHTML = `
+        <span class="txt ${x.done ? "done" : ""}">
+            ${x.text}
+        </span>
 
-        const actions = document.createElement("div");
-        actions.className = "actions";
+        <div class="opt">
+            <input
+            type="checkbox"
+            ${x.done ? "checked" : ""}>
 
-        const check = document.createElement("input");
-        check.type = "checkbox";
-        check.checked = todoList[i].completed;
+            <button class="edit">
+                ✏️
+            </button>
 
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Edit";
+            <button class="del">
+                🗑️
+            </button>
+        </div>
+        `;
 
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
+        const check =
+        box.querySelector("input");
 
-        check.onclick = function(){
-            todoList[i].completed = check.checked;
-            saveData();
-            displayTasks();
+        const edit =
+        box.querySelector(".edit");
+
+        const del =
+        box.querySelector(".del");
+
+        check.onclick = ()=>{
+
+            data[i].done =
+            check.checked;
+
+            save();
+            show();
         };
 
-        editBtn.onclick = function(){
+        edit.onclick = ()=>{
 
-            const value = prompt(
-                "Edit task",
-                todoList[i].text
+            const val =
+            prompt(
+                "Edit Task",
+                data[i].text
             );
 
-            if(value){
-                todoList[i].text = value;
-                saveData();
-                displayTasks();
+            if(val){
+
+                data[i].text =
+                val.trim();
+
+                save();
+                show();
             }
         };
 
-        deleteBtn.onclick = function(){
-            todoList.splice(i,1);
-            saveData();
-            displayTasks();
+        del.onclick = ()=>{
+
+            data.splice(i,1);
+
+            save();
+            show();
         };
 
-        actions.append(
-            check,
-            editBtn,
-            deleteBtn
-        );
-
-        taskDiv.append(
-            text,
-            actions
-        );
-
-        tasks.appendChild(taskDiv);
-    }
+        list.appendChild(box);
+    });
 }
 
 function addTask(){
 
-    const text = input.value.trim();
+    const text =
+    taskIn.value.trim();
 
     if(text === ""){
         return;
     }
 
-    todoList.push({
+    data.push({
         text:text,
-        completed:false
+        done:false
     });
 
-    saveData();
-    displayTasks();
+    save();
+    show();
 
-    input.value = "";
+    taskIn.value = "";
 }
 
-addBtn.onclick = addTask;
+add.onclick = addTask;
 
-input.addEventListener("keypress", function(e){
-    if(e.key === "Enter"){
-        addTask();
+taskIn.addEventListener(
+    "keydown",
+    (e)=>{
+        if(e.key==="Enter"){
+            addTask();
+        }
     }
-});
+);
 
-displayTasks();
+show();
